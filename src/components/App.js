@@ -1,7 +1,7 @@
 import '../styles/App.scss';
 import localStorage from '../services/localStorage';
 import phrases from '../api/data.json';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 function App() {
@@ -12,24 +12,29 @@ function App() {
     character: '',
   });
   const [search, setSearch] = useState(localStorage.get('selection') || '');
-  // const [pj, setPj] = useState('');
+  const [pj, setPj] = useState('');
 
   const drawHtml = data
 
     .filter((phrase) => {
       return phrase.quote.toLowerCase().includes(search.toLowerCase())
 
+
+
+    })
+    .filter((phrase) => {
+      return phrase.character.toLowerCase().includes(pj.toLowerCase())
     })
 
     .map((phrases, index) => {
       return (
-        <li className='phrase-li' key={index}><p className='phrase-quote'>{phrases.quote}</p><span className='phrase-pj'>{phrases.character}</span></li>
+        <li className='phrase-li' key={index}><p className='phrase-quote'>{phrases.quote}</p>-<span className='phrase-pj'> {phrases.character}</span></li>
       )
     })
   const hanleClick = (ev) => {
     ev.preventDefault();
     setData([...data, userQuote])
-    localStorage.set('quote', 'character')
+
     setUserQuote({
       quote: '',
       character: '',
@@ -41,12 +46,22 @@ function App() {
       ...userQuote,
       [ev.target.id]: ev.target.value
     })
+
   }
   const handleSearch = (ev) => {
-    localStorage.set('selection', ev.target.value);
     setSearch(ev.target.value)
 
   }
+  const handleSearchSelect = (ev) => {
+    setPj(ev.target.value)
+  }
+
+  useEffect(() => {
+    localStorage.set('data', data);
+    localStorage.set('userQuote', userQuote);
+    console.log('Ha cambiado el nombre o el email');
+  }, [data, userQuote]);
+
 
   // funcion filtrar por pj - revisar planteamiento
   // const handlePj = (ev) => {
@@ -58,13 +73,14 @@ function App() {
 
   return (
     <div className='page'>
-      <header className='header'><h1 className='title' title='frases de friends'>frases de friends</h1></header>
+      <header className='header'><h1 className='title' title='frases de friends'>frases de friends</h1>
+        <i class='fa-solid fa-tv fa-xl'></i></header>
       <main>
-        <form>
+        <form className='form1'>
           <label className='filter1'>filtrar por frase</label>
           <input type='search' className='search-text' value={search} onChange={handleSearch}></input>
           <label className='filter1'>filtrar por personaje</label>
-          <select type='select' id='pj' >
+          <select type='select' id='pj' onChange={handleSearchSelect}>
             <option>Todos</option>
             <option>Ross</option>
             <option>Monica</option>
@@ -74,10 +90,10 @@ function App() {
             <option>Rachel</option>
           </select>
         </form>
-        <ul>{drawHtml}</ul>
+        <ul className='list'>{drawHtml}</ul>
 
-        <h2>añadir una nueva frase</h2>
-        <form>
+        <h2 className='title2'>añadir una nueva frase</h2>
+        <form className='form2'>
           <label>frase</label>
           <input type='text' clasName='phrase-add' name='quote'
             id='quote' onChange={handleNewQuote} value={userQuote.quote}></input>
