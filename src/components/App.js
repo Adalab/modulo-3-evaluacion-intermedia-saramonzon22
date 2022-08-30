@@ -41,6 +41,9 @@ function App() {
     })
   const hanleClick = (ev) => {
     ev.preventDefault();
+    if (userQuote.quote === '' || userQuote.character === '') {
+      return
+    }
     setData([...data, userQuote])
 
     setUserQuote({
@@ -49,6 +52,7 @@ function App() {
     })
     setSearch('');
     setPjSelect('all');
+
 
   }
   const handleNewQuote = (ev) => {
