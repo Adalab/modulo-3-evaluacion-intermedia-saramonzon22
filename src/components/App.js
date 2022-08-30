@@ -1,29 +1,37 @@
 import '../styles/App.scss';
 import localStorage from '../services/localStorage';
-import phrases from '../api/data.json';
 import { useEffect, useState } from 'react';
+import getDataApi from '../api/fetch';
 
 
 function App() {
 
-  const [data, setData] = useState(phrases);
+  useEffect(() => {
+    getDataApi().then((data) => {
+      setData(data);
+    })
+  }, []);
+
+
+  const [data, setData] = useState([]);
   const [userQuote, setUserQuote] = useState({
     quote: '',
     character: '',
   });
   const [search, setSearch] = useState(localStorage.get('selection') || '');
-  const [pj, setPj] = useState('');
+  const [pjSelect, setPjSelect] = useState('all');
 
   const drawHtml = data
 
     .filter((phrase) => {
       return phrase.quote.toLowerCase().includes(search.toLowerCase())
 
-
-
     })
     .filter((phrase) => {
-      return phrase.character.toLowerCase().includes(pj.toLowerCase())
+      if (pjSelect === 'all') {
+        return true;
+      }
+      return phrase.character === pjSelect;
     })
 
     .map((phrases, index) => {
@@ -52,24 +60,12 @@ function App() {
     setSearch(ev.target.value)
 
   }
+
+
   const handleSearchSelect = (ev) => {
-    setPj(ev.target.value)
+    setPjSelect(ev.target.value)
   }
 
-  useEffect(() => {
-    localStorage.set('data', data);
-    localStorage.set('userQuote', userQuote);
-    console.log('Ha cambiado el nombre o el email');
-  }, [data, userQuote]);
-
-
-  // funcion filtrar por pj - revisar planteamiento
-  // const handlePj = (ev) => {
-  // if (ev.currentTarget.value === phrases.character) {
-  //  return drawHtml
-  //}
-
-  //};
 
   return (
     <div className='page'>
@@ -80,14 +76,14 @@ function App() {
           <label className='filter1'>filtrar por frase</label>
           <input type='search' className='search-text' value={search} onChange={handleSearch}></input>
           <label className='filter1'>filtrar por personaje</label>
-          <select type='select' id='pj' onChange={handleSearchSelect}>
-            <option>Todos</option>
-            <option>Ross</option>
-            <option>Monica</option>
-            <option>Joey</option>
-            <option>Phoebe</option>
-            <option>Chandler</option>
-            <option>Rachel</option>
+          <select type='select' id='pj' onChange={handleSearchSelect} value={pjSelect}>
+            <option value='all'>Todos</option>
+            <option value='Ross'>Ross</option>
+            <option value='Monica'>Monica</option>
+            <option value='Joey'>Joey</option>
+            <option value='Phoebe'>Phoebe</option>
+            <option value='Chandler'>Chandler</option>
+            <option value='Rachel'>Rachel</option>
           </select>
         </form>
         <ul className='list'>{drawHtml}</ul>
@@ -95,10 +91,10 @@ function App() {
         <h2 className='title2'>añadir una nueva frase</h2>
         <form className='form2'>
           <label>frase</label>
-          <input type='text' clasName='phrase-add' name='quote'
+          <input type='text' className='phrase-add' name='quote'
             id='quote' onChange={handleNewQuote} value={userQuote.quote}></input>
           <label>personaje</label>
-          <input type='text' clasName='pj-add' name='character'
+          <input type='text' className='pj-add' name='character'
             id='character' onChange={handleNewQuote} value={userQuote.character}></input>
           <input className='button-add' type='submit' value='Añadir' onClick={hanleClick}></input>
         </form>
