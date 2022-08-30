@@ -47,6 +47,8 @@ function App() {
       quote: '',
       character: '',
     })
+    setSearch('');
+    setPjSelect('all');
 
   }
   const handleNewQuote = (ev) => {
